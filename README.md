@@ -8,6 +8,10 @@ For example, you can generate button information to pass to `SteamInput.GetGlyph
 
 Please note that we have not tested this with all controllers. Xbox controllers and PS5 controllers have been tested.
 
+# Require packages
+- InputSystem (Unity)
+- [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET)
+
 # Install with UPM
 ```
 https://github.com/eviltwo/UnitySteamInputAdapter.git?path=UnitySteamInputAdapter/Assets/UnitySteamInputAdapter
