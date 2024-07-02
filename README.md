@@ -1,7 +1,7 @@
 # Steam Input Adapter
 Change controller input from Unity(InputSystem) to Steam(InputAction). You can get SteamInputActionOrigin from InputControl.
 
-This package is useful if you want to use the Inputsystem but partially use SteamInput.
+This package is useful if you want to use the InputSystem but partially use SteamInput.
 For example, you can generate button information to pass to `SteamInput.GetGlyphPNGForActionOrigin()`.
 
 ![image](https://github.com/eviltwo/UnitySteamInputAdapter/assets/7721151/73e78a15-4096-4467-8a72-d89027b821fb)
