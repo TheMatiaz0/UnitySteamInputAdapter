@@ -16,8 +16,8 @@ https://github.com/eviltwo/UnitySteamInputAdapter.git?path=UnitySteamInputAdapte
 # Code example
 ```
 var unityInputControl = _inputActionReference.action.controls[0];
-var steamAction = SteamInputAdapter.GetSteamInputAction(unityInputControl);
-Debug.Log($"{unityInputControl.name}: {steamAction}");
+var steamInputAction = SteamInputAdapter.GetSteamInputAction(unityInputControl);
+Debug.Log($"{unityInputControl.name}: {steamInputAction}");
 
 // Output
 // buttonNorth: k_EInputActionOrigin_PS5_Triangle
