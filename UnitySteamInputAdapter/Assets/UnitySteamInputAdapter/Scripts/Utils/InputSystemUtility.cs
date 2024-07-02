@@ -1,13 +1,16 @@
 #if SUPPORT_INPUTSYSTEM
+using System.Text;
 using UnityEngine.InputSystem;
 
 namespace UnitySteamInputAdapter.Utils
 {
     public static class InputSystemUtility
     {
+        private static StringBuilder _stringBuilder = new StringBuilder();
+
         public static string GetInputControlLocalPath(InputControl inputControl)
         {
-            return inputControl.path.Substring(inputControl.device.path.Length + 1);
+            return GetInputControlLocalPath(inputControl.path);
         }
 
         public static string GetInputControlLocalPath(string inputControlPath)
@@ -22,12 +25,17 @@ namespace UnitySteamInputAdapter.Utils
             {
                 return null;
             }
-            var device = enumerator.Current.name;
-            if (inputControlPath.Length <= device.Length + 2)
+
+            _stringBuilder.Clear();
+            while (enumerator.MoveNext())
             {
-                return null;
+                if (_stringBuilder.Length > 0)
+                {
+                    _stringBuilder.Append(InputControlPath.Separator);
+                }
+                _stringBuilder.Append(enumerator.Current.name);
             }
-            return inputControlPath.Substring(device.Length + 2);
+            return _stringBuilder.ToString();
         }
     }
 }

@@ -1,8 +1,9 @@
 # Changelog
 
-## [0.9.1] - 2024-07-03
+## [0.9.2] - 2024-07-03
 ### Added
 - Convert steam input action from control path.
+- Fix control path parse
 
 ## [0.9.0] - 2024-07-02
 ### Added
