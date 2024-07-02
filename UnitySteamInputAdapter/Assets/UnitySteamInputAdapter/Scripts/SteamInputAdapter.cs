@@ -45,6 +45,36 @@ namespace UnitySteamInputAdapter
         }
 
         /// <summary>
+        /// Get SteamInputActionOrigin from UnityInputDevice and controlPath.
+        /// </summary>
+        /// <remarks>
+        /// Require SteamAPI.Init() to be called before call this function.
+        /// </remarks>
+        /// <param name="inputDevice">Unity InputDevice</param>
+        /// <param name="controlPath">Unity path of InputControl</param>
+        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="EInputActionOrigin.k_EInputActionOrigin_None"/> is returned.</returns>
+        public static EInputActionOrigin GetSteamInputAction(InputDevice inputDevice, string controlPath)
+        {
+            // Get target device
+            var device = GetSteamInputDevice(inputDevice);
+            if (device == ESteamInputType.k_ESteamInputType_Unknown)
+            {
+                return EInputActionOrigin.k_EInputActionOrigin_None;
+            }
+
+            // Get base input action (almost like XInput)
+            var controlLocalPath = InputSystemUtility.GetInputControlLocalPath(controlPath);
+            var baseInputActionOrigin = GetBaseSteamInputAction(controlLocalPath);
+            if (baseInputActionOrigin == EInputActionOrigin.k_EInputActionOrigin_None)
+            {
+                return EInputActionOrigin.k_EInputActionOrigin_None;
+            }
+
+            // Translate base input to target device input
+            return SteamInput.TranslateActionOrigin(device, baseInputActionOrigin);
+        }
+
+        /// <summary>
         /// Get SteamInputType from UnityInputDevice.
         /// </summary>
         /// <param name="inputDevice">Unity InputDevice</param>
@@ -77,13 +107,22 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputControl for input translation.
         /// Result is almost like XInput.
         /// </summary>
+        private static EInputActionOrigin GetBaseSteamInputAction(InputControl inputControl)
+        {
+            var controlLocalPath = InputSystemUtility.GetInputControlLocalPath(inputControl);
+            return GetBaseSteamInputAction(controlLocalPath);
+        }
+
+        /// <summary>
+        /// Get SteamInputActionOrigin from path for input translation.
+        /// Result is almost like XInput.
+        /// </summary>
         /// <remarks>
         /// Unity InputControl names: No define documents. You can check the name from the Input Debugger.
         /// Steam InputActionOrigin names: https://partner.steamgames.com/doc/api/ISteamInput#EInputActionOrigin
         /// </remarks>
-        private static EInputActionOrigin GetBaseSteamInputAction(InputControl inputControl)
+        private static EInputActionOrigin GetBaseSteamInputAction(string controlLocalPath)
         {
-            var controlLocalPath = InputSystemUtility.GetInputControlLocalPath(inputControl);
             switch (controlLocalPath)
             {
                 // Common controls

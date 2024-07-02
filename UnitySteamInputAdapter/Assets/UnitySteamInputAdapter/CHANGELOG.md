@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.1] - 2024-07-03
+### Added
+- Convert steam input action from control path.
+
 ## [0.9.0] - 2024-07-02
 ### Added
 - SteamInputAdapter
