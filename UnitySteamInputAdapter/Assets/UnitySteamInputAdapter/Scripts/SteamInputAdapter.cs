@@ -1,5 +1,6 @@
 #if SUPPORT_INPUTSYSTEM && SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
 using Steamworks;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.Switch;
@@ -81,6 +82,11 @@ namespace UnitySteamInputAdapter
         /// <returns>Steam InputType. If conversion fails, <see cref="ESteamInputType.k_ESteamInputType_Unknown"/> is returned.</returns>
         public static ESteamInputType GetSteamInputDevice(InputDevice inputDevice)
         {
+            if (TryGetHijackedSteamInputDevice(inputDevice, out var result))
+            {
+                return result;
+            }
+
             switch (inputDevice)
             {
                 case XInputController:
@@ -101,6 +107,58 @@ namespace UnitySteamInputAdapter
                 default:
                     return ESteamInputType.k_ESteamInputType_Unknown;
             }
+        }
+
+        private static readonly InputHandle_t[] InputHandleBuffer = new InputHandle_t[Constants.STEAM_INPUT_MAX_COUNT];
+
+        [System.Serializable]
+        private class Capabilities
+        {
+            public int userIndex = -1;
+        }
+
+        /// <summary>
+        /// If the user enables Steam Input, all gamepads will be overridden to XInput.
+        /// This function retrieves the type of gamepad before it is overridden.
+        /// </summary>
+        public static bool TryGetHijackedSteamInputDevice(InputDevice inputDevice, out ESteamInputType result)
+        {
+            if (inputDevice is not XInputController)
+            {
+                result = ESteamInputType.k_ESteamInputType_Unknown;
+                return false;
+            }
+
+            var steamDeviceCount = SteamInput.GetConnectedControllers(InputHandleBuffer);
+            if (steamDeviceCount == 0)
+            {
+                result = ESteamInputType.k_ESteamInputType_Unknown;
+                return false;
+            }
+
+            var capabilities = inputDevice.description.capabilities;
+            if (string.IsNullOrEmpty(capabilities))
+            {
+                result = ESteamInputType.k_ESteamInputType_Unknown;
+                return false;
+            }
+            var capabilitiesValue = JsonUtility.FromJson<Capabilities>(capabilities);
+            if (capabilitiesValue.userIndex >= 0)
+            {
+                for (int i = 0; i < steamDeviceCount; i++)
+                {
+                    var inputHandle = InputHandleBuffer[i];
+                    var steamDeviceIndex = SteamInput.GetGamepadIndexForController(inputHandle);
+                    if (steamDeviceIndex == capabilitiesValue.userIndex)
+                    {
+                        result = SteamInput.GetInputTypeForHandle(inputHandle);
+                        return true;
+                    }
+                }
+            }
+
+            result = ESteamInputType.k_ESteamInputType_Unknown;
+            return false;
         }
 
         /// <summary>
