@@ -1,4 +1,5 @@
 #if SUPPORT_INPUTSYSTEM && SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
+using System;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -111,7 +112,7 @@ namespace UnitySteamInputAdapter
 
         private static readonly InputHandle_t[] InputHandleBuffer = new InputHandle_t[Constants.STEAM_INPUT_MAX_COUNT];
 
-        [System.Serializable]
+        [Serializable]
         private class Capabilities
         {
             public const int InvalidValue = -1;
@@ -143,8 +144,20 @@ namespace UnitySteamInputAdapter
                 result = ESteamInputType.k_ESteamInputType_Unknown;
                 return false;
             }
-            var capabilitiesValue = JsonUtility.FromJson<Capabilities>(capabilities);
-            if (capabilitiesValue.userIndex != Capabilities.InvalidValue)
+
+            Capabilities capabilitiesValue;
+            try
+            {
+                capabilitiesValue = JsonUtility.FromJson<Capabilities>(capabilities);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                result = ESteamInputType.k_ESteamInputType_Unknown;
+                return false;
+            }
+
+            if (capabilities != null && capabilitiesValue.userIndex != Capabilities.InvalidValue)
             {
                 for (int i = 0; i < steamDeviceCount; i++)
                 {
