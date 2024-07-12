@@ -114,7 +114,8 @@ namespace UnitySteamInputAdapter
         [System.Serializable]
         private class Capabilities
         {
-            public int userIndex = -1;
+            public const int InvalidValue = -1;
+            public int userIndex = InvalidValue;
         }
 
         /// <summary>
@@ -143,7 +144,7 @@ namespace UnitySteamInputAdapter
                 return false;
             }
             var capabilitiesValue = JsonUtility.FromJson<Capabilities>(capabilities);
-            if (capabilitiesValue.userIndex >= 0)
+            if (capabilitiesValue.userIndex != Capabilities.InvalidValue)
             {
                 for (int i = 0; i < steamDeviceCount; i++)
                 {
