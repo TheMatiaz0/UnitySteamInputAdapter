@@ -303,6 +303,10 @@ namespace UnitySteamInputAdapter
                 case "touchpadButton":
                     return EInputActionOrigin.k_EInputActionOrigin_PS5_CenterPad_Click;
 
+                // Switch Pro controls
+                case "capture":
+                    return EInputActionOrigin.k_EInputActionOrigin_Switch_Capture;
+
                 default:
                     return EInputActionOrigin.k_EInputActionOrigin_None;
             }
