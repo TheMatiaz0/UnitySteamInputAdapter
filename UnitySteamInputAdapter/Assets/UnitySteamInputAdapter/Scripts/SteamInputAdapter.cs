@@ -123,6 +123,11 @@ namespace UnitySteamInputAdapter
         /// If the user enables Steam Input, all gamepads will be overridden to XInput.
         /// This function retrieves the type of gamepad before it is overridden.
         /// </summary>
+        /// <remarks>
+        /// If multiple gamepads are connected, the type of gamepad returned by this function might be swapped.
+        /// Only Steam can improve this, and there is nothing that Unity or we can do about it.
+        /// Users can resolve this issue by disabling Steam Input. Alternatively, restarting the game or unplugging and replugging all the gamepads may solve the problem.
+        /// </remarks>
         public static bool TryGetHijackedSteamInputDevice(InputDevice inputDevice, out ESteamInputType result)
         {
             if (inputDevice is not XInputController)
