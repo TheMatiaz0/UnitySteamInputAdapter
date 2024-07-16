@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2024-07-13
+### Added
+- Added processing to convert indirect paths to direct paths.
+## Changed
+- Renamed `GetInputControlLocalPath()` to `RemoveRootFromPath()`. Internal processing was also changed.
+
 ## [1.0.0] - 2024-07-13
 ### Fixed
 - Fixed to recognize gamepads when the user has Steam Input enabled.
