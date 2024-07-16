@@ -6,7 +6,7 @@ For example, you can generate button information to pass to `SteamInput.GetGlyph
 
 Check out [InputGlyphs](https://github.com/eviltwo/InputGlyphs) that use this package!
 
-![image](https://github.com/eviltwo/UnitySteamInputAdapter/assets/7721151/73e78a15-4096-4467-8a72-d89027b821fb)
+![adapter](https://github.com/user-attachments/assets/5bc4d381-531d-4b30-ba14-d36b3643ec96)
 
 # Require packages
 - InputSystem (Unity)
