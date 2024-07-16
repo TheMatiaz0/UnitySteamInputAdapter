@@ -64,8 +64,33 @@ namespace UnitySteamInputAdapter
                 return EInputActionOrigin.k_EInputActionOrigin_None;
             }
 
+            if (string.IsNullOrEmpty(controlPath))
+            {
+                return EInputActionOrigin.k_EInputActionOrigin_None;
+            }
+
+            // Get path without device name.
+            // Example: "XInputController/buttonSouth" -> "buttonSouth"
+            var controlLocalPath = InputSystemUtility.RemoveRootFromPath(controlPath);
+
+            // Convert indirectory path to directory path.
+            // Example: "XInputController/{Submit}" -> "XInputController/buttonSouth"
+            if (InputSystemUtility.HasPathComponent(controlLocalPath))
+            {
+                var control = inputDevice.TryGetChildControl(controlPath);
+                if (control != null)
+                {
+                    controlPath = control.path;
+                    controlLocalPath = InputSystemUtility.RemoveRootFromPath(controlPath);
+                }
+            }
+
+            if (string.IsNullOrEmpty(controlLocalPath))
+            {
+                return EInputActionOrigin.k_EInputActionOrigin_None;
+            }
+
             // Get base input action (almost like XInput)
-            var controlLocalPath = InputSystemUtility.GetInputControlLocalPath(controlPath);
             var baseInputActionOrigin = GetBaseSteamInputAction(controlLocalPath);
             if (baseInputActionOrigin == EInputActionOrigin.k_EInputActionOrigin_None)
             {
@@ -186,7 +211,7 @@ namespace UnitySteamInputAdapter
         /// </summary>
         private static EInputActionOrigin GetBaseSteamInputAction(InputControl inputControl)
         {
-            var controlLocalPath = InputSystemUtility.GetInputControlLocalPath(inputControl);
+            var controlLocalPath = InputSystemUtility.RemoveRootFromPath(inputControl.path);
             return GetBaseSteamInputAction(controlLocalPath);
         }
 
