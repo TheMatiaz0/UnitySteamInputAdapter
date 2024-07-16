@@ -1,41 +1,36 @@
 #if SUPPORT_INPUTSYSTEM
-using System.Text;
 using UnityEngine.InputSystem;
 
 namespace UnitySteamInputAdapter.Utils
 {
     public static class InputSystemUtility
     {
-        private static StringBuilder _stringBuilder = new StringBuilder();
-
-        public static string GetInputControlLocalPath(InputControl inputControl)
-        {
-            return GetInputControlLocalPath(inputControl.path);
-        }
-
-        public static string GetInputControlLocalPath(string inputControlPath)
+        public static string RemoveRootFromPath(string inputControlPath)
         {
             if (string.IsNullOrEmpty(inputControlPath))
             {
-                return null;
+                return string.Empty;
             }
-            var pathComponents = InputControlPath.Parse(inputControlPath);
-            var enumerator = pathComponents.GetEnumerator();
-            if (!enumerator.MoveNext())
+            var startIndex = inputControlPath[0] == InputControlPath.Separator ? 1 : 0;
+            var separationIndex = inputControlPath.IndexOf(InputControlPath.Separator, startIndex);
+            if (separationIndex == -1)
             {
-                return null;
+                return inputControlPath;
             }
 
-            _stringBuilder.Clear();
-            while (enumerator.MoveNext())
+            if (separationIndex == inputControlPath.Length)
             {
-                if (_stringBuilder.Length > 0)
-                {
-                    _stringBuilder.Append(InputControlPath.Separator);
-                }
-                _stringBuilder.Append(enumerator.Current.name);
+                return string.Empty;
             }
-            return _stringBuilder.ToString();
+
+            return inputControlPath.Substring(separationIndex + 1);
+        }
+
+        public static bool HasPathComponent(string path)
+        {
+            return path.IndexOf('<') >= 0
+                || path.IndexOf('{') >= 0
+                || path.IndexOf('(') >= 0;
         }
     }
 }
