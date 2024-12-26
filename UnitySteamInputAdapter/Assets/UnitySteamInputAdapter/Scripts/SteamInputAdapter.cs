@@ -4,7 +4,9 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
+#if UNITY_SWITCH
 using UnityEngine.InputSystem.Switch;
+#endif
 using UnityEngine.InputSystem.XInput;
 using UnitySteamInputAdapter.Utils;
 
@@ -123,10 +125,10 @@ namespace UnitySteamInputAdapter
 
                 case DualShockGamepad:
                     return ESteamInputType.k_ESteamInputType_PS4Controller;
-
+#if UNITY_SWITCH
                 case SwitchProControllerHID:
                     return ESteamInputType.k_ESteamInputType_SwitchProController;
-
+#endif
                 case Gamepad:
                     return ESteamInputType.k_ESteamInputType_GenericGamepad;
 
