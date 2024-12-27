@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.2] - 2024-12-27 - Development
+### Fixed
+- Fixed errors during Linux build. (Switch Pro Controller, DualSense Controller)
+
 ## [1.0.1] - 2024-07-13
 ### Added
 - Added processing to convert indirect paths to direct paths.
