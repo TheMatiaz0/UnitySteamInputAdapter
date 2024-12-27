@@ -4,7 +4,7 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
-#if UNITY_SWITCH
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WSA
 using UnityEngine.InputSystem.Switch;
 #endif
 using UnityEngine.InputSystem.XInput;
@@ -120,15 +120,19 @@ namespace UnitySteamInputAdapter
                 case XInputController:
                     return ESteamInputType.k_ESteamInputType_XBox360Controller;
 
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WSA
                 case DualSenseGamepadHID:
                     return ESteamInputType.k_ESteamInputType_PS5Controller;
+#endif
 
                 case DualShockGamepad:
                     return ESteamInputType.k_ESteamInputType_PS4Controller;
-#if UNITY_SWITCH
+
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WSA
                 case SwitchProControllerHID:
                     return ESteamInputType.k_ESteamInputType_SwitchProController;
 #endif
+
                 case Gamepad:
                     return ESteamInputType.k_ESteamInputType_GenericGamepad;
 
