@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.2] - 2024-12-27 - Development
+## [1.0.2] - 2024-12-27
 ### Fixed
 - Fixed errors during Linux build. (Switch Pro Controller, DualSense Controller)
 
