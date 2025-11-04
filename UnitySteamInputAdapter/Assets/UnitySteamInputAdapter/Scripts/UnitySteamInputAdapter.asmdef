@@ -20,7 +20,7 @@
             "define": "SUPPORT_INPUTSYSTEM"
         },
         {
-            "name": "com.rlabrecque.steamworks.net",
+            "name": "com.thematiaz0.facepunch.steamworks",
             "expression": "",
             "define": "SUPPORT_STEAMWORKS"
         }
