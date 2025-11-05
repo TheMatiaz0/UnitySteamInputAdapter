@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
+    "com.thematiaz0.facepunch.steamworks": "https://github.com/TheMatiaz0/Facepunch.Steamworks.git?path=UnityPlugin#steam-input-implementation",
     "com.unity.collab-proxy": "2.4.3",
     "com.unity.feature.development": "1.0.1",
     "com.unity.inputsystem": "1.5.1",
