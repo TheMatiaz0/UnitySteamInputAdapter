@@ -17,7 +17,7 @@ namespace UnitySteamInputAdapter
     /// This class changes the definition of controller input from the InputSystem to the SteamInputAPI.
     /// </summary>
     /// <remarks>
-    /// Require SteamAPI.Init() to be called before using this class.
+    /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before using this class.
     /// </remarks>
     public static class SteamInputAdapter
     {
@@ -25,10 +25,10 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputControl.
         /// </summary>
         /// <remarks>
-        /// Require SteamAPI.Init() to be called before call this function.
+        /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before call this function.
         /// </remarks>
         /// <param name="inputControl">Unity InputControl</param>
-        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="EInputActionOrigin.k_EInputActionOrigin_None"/> is returned.</returns>
+        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="InputActionOrigin.None"/> is returned.</returns>
         public static InputActionOrigin GetSteamInputAction(InputControl inputControl)
         {
             // Get target device
@@ -53,11 +53,11 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputDevice and controlPath.
         /// </summary>
         /// <remarks>
-        /// Require SteamAPI.Init() to be called before call this function.
+        /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before call this function.
         /// </remarks>
         /// <param name="inputDevice">Unity InputDevice</param>
         /// <param name="controlPath">Unity path of InputControl</param>
-        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="EInputActionOrigin.k_EInputActionOrigin_None"/> is returned.</returns>
+        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="InputActionOrigin.None"/> is returned.</returns>
         public static InputActionOrigin GetSteamInputAction(InputDevice inputDevice, string controlPath)
         {
             // Get target device
@@ -108,7 +108,7 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputType from UnityInputDevice.
         /// </summary>
         /// <param name="inputDevice">Unity InputDevice</param>
-        /// <returns>Steam InputType. If conversion fails, <see cref="ESteamInputType.k_ESteamInputType_Unknown"/> is returned.</returns>
+        /// <returns>Steam InputType. If conversion fails, <see cref="InputType.Unknown"/> is returned.</returns>
         public static InputType GetSteamInputDevice(InputDevice inputDevice)
         {
             if (TryGetHijackedSteamInputDevice(inputDevice, out var result))
