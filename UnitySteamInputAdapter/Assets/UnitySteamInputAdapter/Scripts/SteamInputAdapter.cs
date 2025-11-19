@@ -1,5 +1,6 @@
 #if SUPPORT_INPUTSYSTEM && SUPPORT_STEAMWORKS && !DISABLESTEAMWORKS
 using System;
+using System.Linq;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,7 +17,7 @@ namespace UnitySteamInputAdapter
     /// This class changes the definition of controller input from the InputSystem to the SteamInputAPI.
     /// </summary>
     /// <remarks>
-    /// Require SteamAPI.Init() to be called before using this class.
+    /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before using this class.
     /// </remarks>
     public static class SteamInputAdapter
     {
@@ -24,24 +25,24 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputControl.
         /// </summary>
         /// <remarks>
-        /// Require SteamAPI.Init() to be called before call this function.
+        /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before call this function.
         /// </remarks>
         /// <param name="inputControl">Unity InputControl</param>
-        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="EInputActionOrigin.k_EInputActionOrigin_None"/> is returned.</returns>
-        public static EInputActionOrigin GetSteamInputAction(InputControl inputControl)
+        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="InputActionOrigin.None"/> is returned.</returns>
+        public static InputActionOrigin GetSteamInputAction(InputControl inputControl)
         {
             // Get target device
             var device = GetSteamInputDevice(inputControl.device);
-            if (device == ESteamInputType.k_ESteamInputType_Unknown)
+            if (device == InputType.Unknown)
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             // Get base input action (almost like XInput)
             var baseInputActionOrigin = GetBaseSteamInputAction(inputControl);
-            if (baseInputActionOrigin == EInputActionOrigin.k_EInputActionOrigin_None)
+            if (baseInputActionOrigin == InputActionOrigin.None)
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             // Translate base input to target device input
@@ -52,23 +53,23 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputDevice and controlPath.
         /// </summary>
         /// <remarks>
-        /// Require SteamAPI.Init() to be called before call this function.
+        /// Require <see cref="SteamClient.Init(uint, bool)"/> to be called before call this function.
         /// </remarks>
         /// <param name="inputDevice">Unity InputDevice</param>
         /// <param name="controlPath">Unity path of InputControl</param>
-        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="EInputActionOrigin.k_EInputActionOrigin_None"/> is returned.</returns>
-        public static EInputActionOrigin GetSteamInputAction(InputDevice inputDevice, string controlPath)
+        /// <returns>Steam InputActionOrigin. If conversion fails, <see cref="InputActionOrigin.None"/> is returned.</returns>
+        public static InputActionOrigin GetSteamInputAction(InputDevice inputDevice, string controlPath)
         {
             // Get target device
             var device = GetSteamInputDevice(inputDevice);
-            if (device == ESteamInputType.k_ESteamInputType_Unknown)
+            if (device == InputType.Unknown)
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             if (string.IsNullOrEmpty(controlPath))
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             // Get path without device name.
@@ -89,14 +90,14 @@ namespace UnitySteamInputAdapter
 
             if (string.IsNullOrEmpty(controlLocalPath))
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             // Get base input action (almost like XInput)
             var baseInputActionOrigin = GetBaseSteamInputAction(controlLocalPath);
-            if (baseInputActionOrigin == EInputActionOrigin.k_EInputActionOrigin_None)
+            if (baseInputActionOrigin == InputActionOrigin.None)
             {
-                return EInputActionOrigin.k_EInputActionOrigin_None;
+                return InputActionOrigin.None;
             }
 
             // Translate base input to target device input
@@ -107,8 +108,8 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputType from UnityInputDevice.
         /// </summary>
         /// <param name="inputDevice">Unity InputDevice</param>
-        /// <returns>Steam InputType. If conversion fails, <see cref="ESteamInputType.k_ESteamInputType_Unknown"/> is returned.</returns>
-        public static ESteamInputType GetSteamInputDevice(InputDevice inputDevice)
+        /// <returns>Steam InputType. If conversion fails, <see cref="InputType.Unknown"/> is returned.</returns>
+        public static InputType GetSteamInputDevice(InputDevice inputDevice)
         {
             if (TryGetHijackedSteamInputDevice(inputDevice, out var result))
             {
@@ -118,30 +119,28 @@ namespace UnitySteamInputAdapter
             switch (inputDevice)
             {
                 case XInputController:
-                    return ESteamInputType.k_ESteamInputType_XBox360Controller;
+                    return InputType.XBox360Controller;
 
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WSA
                 case DualSenseGamepadHID:
-                    return ESteamInputType.k_ESteamInputType_PS5Controller;
+                    return InputType.PS5Controller;
 #endif
 
                 case DualShockGamepad:
-                    return ESteamInputType.k_ESteamInputType_PS4Controller;
+                    return InputType.PS4Controller;
 
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_WSA
                 case SwitchProControllerHID:
-                    return ESteamInputType.k_ESteamInputType_SwitchProController;
+                    return InputType.SwitchProController;
 #endif
 
                 case Gamepad:
-                    return ESteamInputType.k_ESteamInputType_GenericGamepad;
+                    return InputType.GenericGamepad;
 
                 default:
-                    return ESteamInputType.k_ESteamInputType_Unknown;
+                    return InputType.Unknown;
             }
         }
-
-        private static readonly InputHandle_t[] InputHandleBuffer = new InputHandle_t[Constants.STEAM_INPUT_MAX_COUNT];
 
         [Serializable]
         private class Capabilities
@@ -159,25 +158,25 @@ namespace UnitySteamInputAdapter
         /// Only Steam can improve this, and there is nothing that Unity or we can do about it.
         /// Users can resolve this issue by disabling Steam Input. Alternatively, restarting the game or unplugging and replugging all the gamepads may solve the problem.
         /// </remarks>
-        public static bool TryGetHijackedSteamInputDevice(InputDevice inputDevice, out ESteamInputType result)
+        public static bool TryGetHijackedSteamInputDevice(InputDevice inputDevice, out InputType result)
         {
             if (inputDevice is not XInputController)
             {
-                result = ESteamInputType.k_ESteamInputType_Unknown;
+                result = InputType.Unknown;
                 return false;
             }
 
-            var steamDeviceCount = SteamInput.GetConnectedControllers(InputHandleBuffer);
+            var steamDeviceCount = SteamInput.Controllers.Count();
             if (steamDeviceCount == 0)
             {
-                result = ESteamInputType.k_ESteamInputType_Unknown;
+                result = InputType.Unknown;
                 return false;
             }
 
             var capabilities = inputDevice.description.capabilities;
             if (string.IsNullOrEmpty(capabilities))
             {
-                result = ESteamInputType.k_ESteamInputType_Unknown;
+                result = InputType.Unknown;
                 return false;
             }
 
@@ -189,25 +188,22 @@ namespace UnitySteamInputAdapter
             catch (Exception e)
             {
                 Debug.LogException(e);
-                result = ESteamInputType.k_ESteamInputType_Unknown;
+                result = InputType.Unknown;
                 return false;
             }
 
             if (capabilities != null && capabilitiesValue.userIndex != Capabilities.InvalidValue)
             {
-                for (int i = 0; i < steamDeviceCount; i++)
+                var controller = SteamInput.Controllers.FirstOrDefault(c => c.GamepadIndex == capabilitiesValue.userIndex);
+
+                if (controller != null)
                 {
-                    var inputHandle = InputHandleBuffer[i];
-                    var steamDeviceIndex = SteamInput.GetGamepadIndexForController(inputHandle);
-                    if (steamDeviceIndex == capabilitiesValue.userIndex)
-                    {
-                        result = SteamInput.GetInputTypeForHandle(inputHandle);
-                        return true;
-                    }
+                    result = controller.InputType;
+                    return true;
                 }
             }
 
-            result = ESteamInputType.k_ESteamInputType_Unknown;
+            result = InputType.Unknown;
             return false;
         }
 
@@ -215,7 +211,7 @@ namespace UnitySteamInputAdapter
         /// Get SteamInputActionOrigin from UnityInputControl for input translation.
         /// Result is almost like XInput.
         /// </summary>
-        private static EInputActionOrigin GetBaseSteamInputAction(InputControl inputControl)
+        private static InputActionOrigin GetBaseSteamInputAction(InputControl inputControl)
         {
             var controlLocalPath = InputSystemUtility.RemoveRootFromPath(inputControl.path);
             return GetBaseSteamInputAction(controlLocalPath);
@@ -229,117 +225,117 @@ namespace UnitySteamInputAdapter
         /// Unity InputControl names: No define documents. You can check the name from the Input Debugger.
         /// Steam InputActionOrigin names: https://partner.steamgames.com/doc/api/ISteamInput#EInputActionOrigin
         /// </remarks>
-        private static EInputActionOrigin GetBaseSteamInputAction(string controlLocalPath)
+        private static InputActionOrigin GetBaseSteamInputAction(string controlLocalPath)
         {
             switch (controlLocalPath)
             {
                 // Common controls
                 case "buttonSouth":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_A;
+                    return InputActionOrigin.XBox360_A;
 
                 case "buttonEast":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_B;
+                    return InputActionOrigin.XBox360_B;
 
                 case "buttonWest":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_X;
+                    return InputActionOrigin.XBox360_X;
 
                 case "buttonNorth":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_Y;
+                    return InputActionOrigin.XBox360_Y;
 
                 case "leftShoulder":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftBumper;
+                    return InputActionOrigin.XBox360_LeftBumper;
 
                 case "rightShoulder":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightBumper;
+                    return InputActionOrigin.XBox360_RightBumper;
 
                 case "start":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_Start;
+                    return InputActionOrigin.XBox360_Start;
 
                 case "select":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_Back;
+                    return InputActionOrigin.XBox360_Back;
 
                 case "leftTrigger":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftTrigger_Pull;
+                    return InputActionOrigin.XBox360_LeftTrigger_Pull;
 
                 case "leftTriggerButton":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftTrigger_Click;
+                    return InputActionOrigin.XBox360_LeftTrigger_Click;
 
                 case "rightTrigger":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightTrigger_Pull;
+                    return InputActionOrigin.XBox360_RightTrigger_Pull;
 
                 case "rightTriggerButton":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightTrigger_Click;
+                    return InputActionOrigin.XBox360_RightTrigger_Click;
 
                 case "leftStick":
                 case "leftStick/x":
                 case "leftStick/y":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_Move;
+                    return InputActionOrigin.XBox360_LeftStick_Move;
 
                 case "leftStickPress":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_Click;
+                    return InputActionOrigin.XBox360_LeftStick_Click;
 
                 case "leftStick/up":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_DPadNorth;
+                    return InputActionOrigin.XBox360_LeftStick_DPadNorth;
 
                 case "leftStick/down":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_DPadSouth;
+                    return InputActionOrigin.XBox360_LeftStick_DPadSouth;
 
                 case "leftStick/left":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_DPadWest;
+                    return InputActionOrigin.XBox360_LeftStick_DPadWest;
 
                 case "leftStick/right":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_LeftStick_DPadEast;
+                    return InputActionOrigin.XBox360_LeftStick_DPadEast;
 
                 case "rightStick":
                 case "rightStick/x":
                 case "rightStick/y":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_Move;
+                    return InputActionOrigin.XBox360_RightStick_Move;
 
                 case "rightStickPress":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_Click;
+                    return InputActionOrigin.XBox360_RightStick_Click;
 
                 case "rightStick/up":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_DPadNorth;
+                    return InputActionOrigin.XBox360_RightStick_DPadNorth;
 
                 case "rightStick/down":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_DPadSouth;
+                    return InputActionOrigin.XBox360_RightStick_DPadSouth;
 
                 case "rightStick/left":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_DPadWest;
+                    return InputActionOrigin.XBox360_RightStick_DPadWest;
 
                 case "rightStick/right":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_RightStick_DPadEast;
+                    return InputActionOrigin.XBox360_RightStick_DPadEast;
 
                 case "dpad/up":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_DPad_North;
+                    return InputActionOrigin.XBox360_DPad_North;
 
                 case "dpad/down":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_DPad_South;
+                    return InputActionOrigin.XBox360_DPad_South;
 
                 case "dpad/left":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_DPad_West;
+                    return InputActionOrigin.XBox360_DPad_West;
 
                 case "dpad/right":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_DPad_East;
+                    return InputActionOrigin.XBox360_DPad_East;
 
                 case "dpad":
                 case "dpad/x":
                 case "dpad/y":
-                    return EInputActionOrigin.k_EInputActionOrigin_XBox360_DPad_Move;
+                    return InputActionOrigin.XBox360_DPad_Move;
 
                 // DualSense controls
                 case "micButton":
-                    return EInputActionOrigin.k_EInputActionOrigin_PS5_Mute;
+                    return InputActionOrigin.PS5_Mute;
 
                 case "touchpadButton":
-                    return EInputActionOrigin.k_EInputActionOrigin_PS5_CenterPad_Click;
+                    return InputActionOrigin.PS5_CenterPad_Click;
 
                 // Switch Pro controls
                 case "capture":
-                    return EInputActionOrigin.k_EInputActionOrigin_Switch_Capture;
+                    return InputActionOrigin.Switch_Capture;
 
                 default:
-                    return EInputActionOrigin.k_EInputActionOrigin_None;
+                    return InputActionOrigin.None;
             }
         }
     }

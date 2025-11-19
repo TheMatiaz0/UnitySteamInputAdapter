@@ -13,5 +13,6 @@
     ],
 
     "dependencies": {
+        "com.thematiaz0.facepunch.steamworks": "1.61.0"
     }
 }

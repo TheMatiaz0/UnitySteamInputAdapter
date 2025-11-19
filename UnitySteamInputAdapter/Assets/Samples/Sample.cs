@@ -6,6 +6,8 @@ using UnitySteamInputAdapter.Utils;
 
 public class Sample : MonoBehaviour
 {
+    private const int PLACEHOLDER_APP_ID = 480;
+
     [SerializeField]
     private string[] _controlPaths = null;
 
@@ -15,14 +17,14 @@ public class Sample : MonoBehaviour
 
     private void Awake()
     {
-        SteamAPI.Init();
+        SteamClient.Init(PLACEHOLDER_APP_ID, asyncCallbacks: true);
         SteamInput.Init(false);
     }
 
     private void OnDestroy()
     {
         SteamInput.Shutdown();
-        SteamAPI.Shutdown();
+        SteamClient.Shutdown();
     }
 
     private void OnGUI()
